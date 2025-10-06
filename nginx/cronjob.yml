@@ -1,0 +1,42 @@
+kind: CronJob
+apiVersion: batch/v1
+metadata:
+  name: cron-demo
+  namespace: meow
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: cron-job-pod
+          labels:
+            app: backups
+        spec:
+          containers:
+            - name: cron-job-cont
+              image: busybox:latest
+              command:
+              - sh
+              - -c
+              - >
+                echo "Backup Started";
+                mkdir -p /cron-demo &&
+                mkdir -p /task-check &&
+                cp -r /cron-demo /task-check &&
+                echo "Backup Completed";
+              volumeMounts:
+                - name: data-volume
+                  mountPath: /cron-demo
+                - name: backup-volume
+                  mountPath: /task-check
+          restartPolicy: OnFailure
+          volumes:
+            - name: data-volume
+              hostPath:
+                path: /cron-demo
+                type: DirectoryOrCreate
+            - name: backup-volume
+              hostPath:
+                path: /task-check
+                type: DirectoryOrCreate

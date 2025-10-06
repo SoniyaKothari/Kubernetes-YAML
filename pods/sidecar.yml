@@ -1,0 +1,21 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: sidecar-demo
+spec:
+  volumes:
+    - name: shared-log
+      emptyDir: {}
+  containers:
+   - name: main-cont
+     image: busybox:latest
+     command: ["sh","-c","while true; do echo 'Mewss' >> /var/log/sidecar.logs; sleep 5;  done;"]
+     volumeMounts:
+       - name: shared-log
+         mountPath: /var/log
+   - name: sidecar-cont
+     image: busybox:latest
+     command: ["sh","-c","tail -f /var/log/sidecar.logs"]
+     volumeMounts:
+       - name: shared-log
+         mountPath: /var/log

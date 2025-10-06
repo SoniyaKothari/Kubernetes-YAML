@@ -1,0 +1,20 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: nginx
+  namespace: canary
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: depl-stra
+  template:
+    metadata:
+      labels:
+        app: depl-stra
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
